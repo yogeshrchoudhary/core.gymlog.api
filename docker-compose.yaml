@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  gymlog-api:
+    image: yogissamples.azurecr.io/comp-gymlog-img:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: comp-gymlog-cntr
+    ports:
+      - "5000:80"
