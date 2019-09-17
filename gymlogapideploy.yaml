@@ -1,0 +1,51 @@
+# Kubernetes `Deployment` section. 
+# With the CLI you would create it using the `kubectl run <deployment-name>` command
+apiVersion: apps/v1
+# Following specifies kind of K8S objecct you want to create
+kind: Deployment
+metadata:
+  # Following is the name of the deployment
+  name: lclgldep
+  # Why do we need the following label??
+  # labels:
+  #  app: lclgldep
+spec:
+  # Following specifies how many copies/Pods you need
+  replicas: 3
+  # Following is the template for each of the pods created by K8S
+  template:
+    metadata:
+      # Assuming following is the name of the Pod that is created by K8S
+      name: lclglpod
+      # We need the following label, this seems to be used by the 'spec.selector' sub-section below
+      labels:
+        app: lclglpod
+    spec:
+      # A `spec` specifies what containers are present in the Pod
+      containers:
+      # The following specifies the name of the contaiiner 
+      # and the image to use for the container
+      - name: lclglcntr
+        image: localhost:5001/gymlogapi:v1
+        imagePullPolicy: IfNotPresent
+      # The 'restartPolicy' default is 'Always', so why specify
+      # Note: 'restartPolicy' applies to 'containers'
+      restartPolicy: Always
+  selector:
+    # With this we are telling K8S to run 3 pods with the label app = 'lclglpod' as mentioned in the pod template
+    matchLabels:
+      app: lclglpod
+---
+# Kubernetes `Service` section. 
+# With the CLI you would create it using the `kubectl expose <deployment-name> --type=NodePort` command
+apiVersion: v1
+kind: Service
+metadata:
+  name: lclglsvc
+spec:
+  selector:
+    # The following maps to the pod labels in the pod template mentioned in your deployment
+    app: lclglpod
+  ports:
+  - port: 80
+  type: NodePort
